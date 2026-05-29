@@ -151,21 +151,27 @@ function syncAiState() {
 }
 
 function syncScheduleState() {
-  const disabled = !runAiAutomatically.checked;
-  aiScheduleFields.classList.toggle("is-muted", disabled);
-  setDisabled(aiScheduleFields, disabled);
+  const hidden = !runAiAutomatically.checked;
+  aiScheduleFields.hidden = hidden;
+  aiScheduleFields.classList.toggle("is-hidden", hidden);
 }
 
 function syncCurrencyState() {
   const currencyEnabled = useCurrency.checked;
-  currencyBlock.hidden = !currencyEnabled;
-  setDisabled(currencyBlock, !currencyEnabled);
+  const hidden = !currencyEnabled;
+  currencyBlock.hidden = hidden;
+  currencyBlock.classList.toggle("is-hidden", hidden);
   syncAmountPrefixes();
 }
 
 function syncCurrencyMethod() {
   const method = policyForm.querySelector('input[name="currencyMethod"]:checked')?.value;
   const converting = method === "convert" && useCurrency.checked;
+  if (!useCurrency.checked) {
+    conversionFields.classList.remove("is-muted");
+    setDisabled(conversionFields, false);
+    return;
+  }
   conversionFields.classList.toggle("is-muted", !converting);
   setDisabled(conversionFields, !converting);
 }

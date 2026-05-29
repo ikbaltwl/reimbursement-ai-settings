@@ -412,38 +412,38 @@ Allow reimbursement for prescribed medication shown on pharmacy receipts. If a r
                     </section>
                   </div>
 
-                  <div class="section-heading schedule-heading">
-                    <h3>AI processing schedule</h3>
-                    <p>Set how often AI reviews and processes pending claims based on the schedule you define.</p>
-                  </div>
+                  <section class="payment-date-section" aria-labelledby="paymentDateTitle">
+                    <div class="section-heading schedule-heading">
+                      <h3 id="paymentDateTitle">Auto-fill payment date</h3>
+                      <p>
+                        The payment date will be automatically filled once the request is auto-approved by AI.
+                        This date also triggers the reimbursement disbursement if you are using Reimbursement
+                        Disbursement.
+                      </p>
+                    </div>
 
-                  <label class="legacy-check">
-                    <input id="runAiAutomatically" name="runAiAutomatically" type="checkbox" checked />
-                    <span class="checkmark" aria-hidden="true"></span>
-                    <strong>Run AI verification automatically</strong>
-                  </label>
+                    <label class="legacy-check payment-date-check">
+                      <input id="runAiAutomatically" name="runAiAutomatically" type="checkbox" checked />
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <strong>Set payment date</strong>
+                    </label>
 
-                  <div class="inline-fields" id="aiScheduleFields">
-                    <label class="line-field">
-                      <span>Every</span>
-                      <input name="aiScheduleEvery" value="2" inputmode="numeric" />
-                    </label>
-                    <label class="line-field">
-                      <span>Period</span>
-                      <select name="aiSchedulePeriod">
-                        <option>days</option>
-                        <option>weeks</option>
-                      </select>
-                    </label>
-                    <label class="line-field after-field">
-                      <span>Start after</span>
-                      <select name="aiScheduleStart">
-                        <option>Claim submitted</option>
-                        <option>Receipt uploaded</option>
-                        <option>Approval requested</option>
-                      </select>
-                    </label>
-                  </div>
+                    <div class="inline-fields payment-date-fields" id="aiScheduleFields">
+                      <label class="line-field payment-date-number">
+                        <span class="sr-only">Payment date offset</span>
+                        <input name="aiScheduleEvery" value="2" inputmode="numeric" />
+                      </label>
+                      <label class="line-field payment-date-period">
+                        <span class="sr-only">Payment date period</span>
+                        <select name="aiSchedulePeriod">
+                          <option>days</option>
+                          <option>weeks</option>
+                        </select>
+                      </label>
+                      <input type="hidden" name="aiScheduleStart" value="After approval date" />
+                      <span class="payment-date-after">After approval date</span>
+                    </div>
+                  </section>
                 </div>
 
                 <section class="legacy-settings" aria-label="Classic reimbursement settings">

@@ -1065,7 +1065,8 @@ textarea:disabled {
 .builder-list,
 .extraction-list {
   display: grid;
-  gap: 10px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .builder-rule,
@@ -1159,6 +1160,11 @@ textarea:disabled {
   display: grid;
   gap: 8px;
   min-width: 0;
+}
+
+.choice-fieldset > legend + .relationship-list,
+.relationship-override > legend + .relationship-list {
+  margin-top: 4px;
 }
 
 .relationship-chips {
@@ -1274,6 +1280,34 @@ textarea:disabled {
   color: var(--muted);
   font-size: 12px;
   font-weight: 700;
+}
+
+#eligibilityBody input:not([type="checkbox"]):not([type="radio"]),
+#eligibilityBody select,
+#documentationBody input:not([type="checkbox"]):not([type="radio"]),
+#documentationBody select,
+#eligibilityBody .tag-editor,
+#documentationBody .tag-editor,
+#eligibilityBody .segmented-control,
+#documentationBody .segmented-control {
+  background-color: transparent;
+}
+
+#eligibilityBody .value-picker,
+#documentationBody .value-picker {
+  background:
+    linear-gradient(45deg, transparent 50%, #818181 50%),
+    linear-gradient(135deg, #818181 50%, transparent 50%),
+    transparent;
+  background-position:
+    calc(100% - 11px) 13px,
+    calc(100% - 6px) 13px,
+    0 0;
+  background-size:
+    5px 5px,
+    5px 5px,
+    auto;
+  background-repeat: no-repeat;
 }
 
 .toggle-pill,

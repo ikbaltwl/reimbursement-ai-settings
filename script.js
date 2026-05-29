@@ -5,6 +5,7 @@ const closeBanner = document.querySelector("#closeBanner");
 const infoBanner = document.querySelector("#infoBanner");
 const addCriteria = document.querySelector("#addCriteria");
 const criteriaList = document.querySelector("#criteriaList");
+const aiDecisionCaption = document.querySelector("#aiDecisionCaption");
 const runAiAutomatically = document.querySelector("#runAiAutomatically");
 const aiScheduleFields = document.querySelector("#aiScheduleFields");
 const tipsToggle = document.querySelector("#tipsToggle");
@@ -66,8 +67,20 @@ const criteriaSuggestions = {
     "Prescription Copy",
   ],
   items: ["Cosmetics", "Skincare", "Hair Loss Treatment", "Botox", "Filler", "Supplements"],
-  "claim amount": ["Policy limit", "Remaining balance", "Monthly allowance", "Annual allowance"],
   "receipt date": ["Submitted date", "Receipt issued date", "Approval date"],
+};
+
+const criteriaTypeOptions = ["Merchant type", "Receipt type", "Receipt date", "Items"];
+
+const criteriaOperatorOptions = {
+  default: ["Includes", "Excludes"],
+  "receipt date": ["Is less than", "Is greater than"],
+};
+
+const aiDecisionCaptions = {
+  "Need review": "Route requests for manual review based on approval rules",
+  "Auto-approve": "Automatically approve requests that match the configured policy criteria",
+  "Auto-reject": "Automatically reject requests that fail the configured policy criteria",
 };
 
 const currencyPrefixes = {
@@ -154,6 +167,7 @@ function syncScheduleState() {
   const hidden = !runAiAutomatically.checked;
   aiScheduleFields.hidden = hidden;
   aiScheduleFields.classList.toggle("is-hidden", hidden);
+  aiScheduleFields.setAttribute("aria-hidden", String(hidden));
 }
 
 function syncCurrencyState() {
@@ -161,6 +175,7 @@ function syncCurrencyState() {
   const hidden = !currencyEnabled;
   currencyBlock.hidden = hidden;
   currencyBlock.classList.toggle("is-hidden", hidden);
+  currencyBlock.setAttribute("aria-hidden", String(hidden));
   syncAmountPrefixes();
 }
 
@@ -195,6 +210,11 @@ function syncMaxRequestState() {
 function syncLimitState() {
   const limitType = policyForm.querySelector('input[name="limitType"]:checked')?.value;
   limitAmount.disabled = limitType !== "amount";
+}
+
+function syncAiDecisionCaption() {
+  const decision = policyForm.elements.aiDecision.value;
+  aiDecisionCaption.textContent = aiDecisionCaptions[decision] || aiDecisionCaptions["Need review"];
 }
 
 function getActiveAmountPrefix() {
@@ -269,6 +289,32 @@ function ensureCriteriaRemoveButtons() {
 
 function getSuggestionKey(row) {
   return row.querySelector("select")?.value.toLowerCase() || "merchant type";
+}
+
+function criteriaTypeOptionsHtml(selectedValue = "Merchant type") {
+  return criteriaTypeOptions
+    .map((type) => `<option${type === selectedValue ? " selected" : ""}>${escapeHtml(type)}</option>`)
+    .join("");
+}
+
+function criteriaOperatorOptionsHtml(type, selectedValue) {
+  const operators = criteriaOperatorOptions[type.toLowerCase()] || criteriaOperatorOptions.default;
+  const selected = operators.includes(selectedValue) ? selectedValue : operators[0];
+  return operators
+    .map((operator) => `<option${operator === selected ? " selected" : ""}>${escapeHtml(operator)}</option>`)
+    .join("");
+}
+
+function syncCriteriaOperator(row) {
+  const typeSelect = row.querySelector(".criteria-fields select:first-child");
+  const operatorSelect = row.querySelector(".criteria-fields select:nth-of-type(2)");
+  if (!typeSelect || !operatorSelect) return;
+
+  operatorSelect.innerHTML = criteriaOperatorOptionsHtml(typeSelect.value, operatorSelect.value);
+}
+
+function syncCriteriaOperators() {
+  criteriaList.querySelectorAll("[data-criteria]").forEach(syncCriteriaOperator);
 }
 
 function getSuggestionsForRow(row) {
@@ -440,17 +486,10 @@ function createCriteriaRow(number) {
     <div class="criteria-label">Criteria ${number}</div>
     <div class="criteria-fields">
       <select aria-label="Criteria ${number} type">
-        <option>Merchant type</option>
-        <option>Receipt type</option>
-        <option>Receipt date</option>
-        <option>Items</option>
-        <option>Claim amount</option>
+        ${criteriaTypeOptionsHtml()}
       </select>
       <select aria-label="Criteria ${number} operator">
-        <option>Includes</option>
-        <option>Excludes</option>
-        <option>Is less than</option>
-        <option>Is greater than</option>
+        ${criteriaOperatorOptionsHtml("Merchant type")}
       </select>
       <button
         type="button"
@@ -866,20 +905,54 @@ function addDocumentConditionRow(list, condition) {
 }
 
 function syncSupportingDocumentRequirement(block) {
-  const conditional = block.querySelector('input[value="conditional"]')?.checked;
-  block.querySelector(".conditional-section").classList.toggle("is-open", Boolean(conditional));
+  const conditionalSection = block.querySelector(".conditional-section");
+  if (!conditionalSection) return;
+
+  const mandatory = block.querySelector('[data-document-requirement][value="mandatory"]')?.checked;
+  const hasConditions = Boolean(block.querySelector("[data-document-condition]"));
+  conditionalSection.classList.toggle("is-open", Boolean(mandatory && hasConditions));
+}
+
+function supportingDocumentRequirementHtml(id, mandatory = false) {
+  return `
+    <div class="segmented-control document-requirement" role="radiogroup" aria-label="Supporting document requirement">
+      <label>
+        <input
+          data-document-requirement
+          name="supportingDocRequirement${id}"
+          type="radio"
+          value="optional"
+          ${mandatory ? "" : "checked"}
+        />
+        <span>Optional</span>
+      </label>
+      <label>
+        <input
+          data-document-requirement
+          name="supportingDocRequirement${id}"
+          type="radio"
+          value="mandatory"
+          ${mandatory ? "checked" : ""}
+        />
+        <span>Mandatory</span>
+      </label>
+    </div>
+  `;
 }
 
 function createSupportingDocument(config = {}) {
   const id = supportingDocumentId++;
   const conditions = config.requiredWhen || [];
-  const conditional = config.requirement === "conditional" || conditions.length > 0;
+  const mandatory = Boolean(config.mandatory || config.is_mandatory || config.requirement === "mandatory" || conditions.length);
   const block = document.createElement("article");
   block.className = "document-block";
   block.dataset.supportingDocument = "";
   block.innerHTML = `
     <div class="document-row-header">
-      <strong>Supporting document</strong>
+      <div class="document-title-group">
+        <strong>Supporting document</strong>
+        ${supportingDocumentRequirementHtml(id, mandatory)}
+      </div>
       <button type="button" class="text-button danger" data-remove-supporting-document aria-label="Remove supporting document">Remove</button>
     </div>
     <div class="document-form-grid">
@@ -892,17 +965,7 @@ function createSupportingDocument(config = {}) {
         <input data-document-description value="${escapeHtml(config.description || "")}" placeholder="Brief description" aria-label="Supporting document description" />
       </label>
     </div>
-    <div class="requirement-toggle" role="radiogroup" aria-label="Supporting document requirement">
-      <label class="radio-row">
-        <input name="supportingDocRequirement${id}" type="radio" value="always"${conditional ? "" : " checked"} />
-        <span>Always required</span>
-      </label>
-      <label class="radio-row">
-        <input name="supportingDocRequirement${id}" type="radio" value="conditional"${conditional ? " checked" : ""} />
-        <span>Conditional</span>
-      </label>
-    </div>
-    <div class="conditional-section${conditional ? " is-open" : ""}">
+    <div class="conditional-section${mandatory && conditions.length ? " is-open" : ""}">
       <div class="builder-subhead compact-subhead">
         <span>Required if any condition matches</span>
       </div>
@@ -920,6 +983,7 @@ function createSupportingDocument(config = {}) {
   const extractionList = block.querySelector("[data-document-extraction-list]");
   conditions.forEach((condition) => addDocumentConditionRow(conditionList, condition));
   (config.extractions || []).forEach((extraction) => addExtractionRow(extractionList, extraction));
+  syncSupportingDocumentRequirement(block);
   return block;
 }
 
@@ -1155,12 +1219,13 @@ function collectDocumentation() {
       if (!documentType) return null;
 
       const description = block.querySelector("[data-document-description]")?.value.trim();
-      const isConditional = block.querySelector('input[value="conditional"]')?.checked;
+      const isMandatory = block.querySelector('[data-document-requirement][value="mandatory"]')?.checked;
       const conditionRows = Array.from(block.querySelectorAll("[data-document-condition]"));
       const extractions = collectExtractionRows(block.querySelector("[data-document-extraction-list]"));
       const documentConfig = {
         document_type: documentType,
-        required_when: isConditional ? conditionRows.map(collectCondition).filter(Boolean) : [],
+        is_mandatory: Boolean(isMandatory),
+        required_when: isMandatory ? conditionRows.map(collectCondition).filter(Boolean) : [],
         required_extractions: extractions,
       };
 
@@ -1181,6 +1246,8 @@ function collectDocumentation() {
 
 function collectPolicyData() {
   const formData = new FormData(policyForm);
+  const paymentDateEnabled = runAiAutomatically.checked;
+  const currencyEnabled = useCurrency.checked;
   return {
     reimbursementName: formData.get("reimbursementName"),
     effectiveDate: formData.get("effectiveDate"),
@@ -1191,10 +1258,10 @@ function collectPolicyData() {
           policyCategory: formData.get("policyCategory"),
           decision: formData.get("aiDecision"),
           rules: formData.get("aiRules"),
-          runAutomatically: runAiAutomatically.checked,
-          scheduleEvery: formData.get("aiScheduleEvery"),
-          schedulePeriod: formData.get("aiSchedulePeriod"),
-          scheduleStart: formData.get("aiScheduleStart"),
+          runAutomatically: paymentDateEnabled,
+          scheduleEvery: paymentDateEnabled ? formData.get("aiScheduleEvery") : null,
+          schedulePeriod: paymentDateEnabled ? formData.get("aiSchedulePeriod") : null,
+          scheduleStart: paymentDateEnabled ? formData.get("aiScheduleStart") : null,
           criteria: collectCriteria(),
           eligibility: collectEligibility(),
           documentation: collectDocumentation(),
@@ -1202,12 +1269,12 @@ function collectPolicyData() {
       : null,
     classic: {
       unlimitedAmount: Boolean(formData.get("unlimitedAmount")),
-      useCurrency: useCurrency.checked,
-      currency: formData.get("currency"),
-      currencyMethod: formData.get("currencyMethod"),
-      allowanceAmount: formData.get("allowanceAmount"),
-      currencyRate: formData.get("currencyRate"),
-      conversionAmount: formData.get("conversionAmount"),
+      useCurrency: currencyEnabled,
+      currency: currencyEnabled ? formData.get("currency") : null,
+      currencyMethod: currencyEnabled ? formData.get("currencyMethod") : null,
+      allowanceAmount: currencyEnabled ? formData.get("allowanceAmount") : null,
+      currencyRate: currencyEnabled ? formData.get("currencyRate") : null,
+      conversionAmount: currencyEnabled ? formData.get("conversionAmount") : null,
       defaultNewEmployee: Boolean(formData.get("defaultNewEmployee")),
       includeTakeHomePay: Boolean(formData.get("includeTakeHomePay")),
       taxable: Boolean(formData.get("taxable")),
@@ -1297,11 +1364,14 @@ criteriaList.addEventListener("click", (event) => {
 criteriaList.addEventListener("change", (event) => {
   const row = event.target.closest("[data-criteria]");
   if (row && event.target === row.querySelector("select")) {
+    syncCriteriaOperator(row);
     row.querySelector(".chips").innerHTML = "";
     closeCriteriaPopover();
     showToast("Criteria values reset for the selected type");
   }
 });
+
+policyForm.elements.aiDecision.addEventListener("change", syncAiDecisionCaption);
 
 criteriaPopoverSearch.addEventListener("input", renderCriteriaPopover);
 
@@ -1507,7 +1577,7 @@ policyBuilderConfig.addEventListener("change", (event) => {
 
   if (
     event.target.closest("[data-supporting-document]") &&
-    event.target.matches('.requirement-toggle input[type="radio"]')
+    event.target.matches('[data-document-requirement]')
   ) {
     syncSupportingDocumentRequirement(event.target.closest("[data-supporting-document]"));
   }
@@ -1625,6 +1695,7 @@ resetButton.addEventListener("click", () => {
   syncExpiryState();
   syncMaxRequestState();
   syncLimitState();
+  syncAiDecisionCaption();
   showToast("Form restored to its initial prototype values");
 });
 
@@ -1677,10 +1748,12 @@ document.addEventListener("keydown", (event) => {
 
 resetPolicyBuilderConfig();
 ensureCriteriaRemoveButtons();
+syncCriteriaOperators();
 syncAiState();
 syncScheduleState();
 syncCurrencyState();
 syncCurrencyMethod();
+syncAiDecisionCaption();
 syncAmountPrefixes();
 syncExpiryState();
 syncMaxRequestState();

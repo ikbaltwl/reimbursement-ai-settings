@@ -157,6 +157,7 @@ function syncAiState() {
   policyForm.classList.toggle("ai-disabled", !enabled);
   aiConfig.hidden = !enabled;
   simulateButton.hidden = !enabled;
+  addBenefit.disabled = enabled;
   setDisabled(aiConfig, !enabled);
   if (!enabled) {
     closeCriteriaPopover();
@@ -908,9 +909,8 @@ function syncSupportingDocumentRequirement(block) {
   const conditionalSection = block.querySelector(".conditional-section");
   if (!conditionalSection) return;
 
-  const mandatory = block.querySelector('[data-document-requirement][value="mandatory"]')?.checked;
-  const hasConditions = Boolean(block.querySelector("[data-document-condition]"));
-  conditionalSection.classList.toggle("is-open", Boolean(mandatory && hasConditions));
+  const conditional = block.querySelector('[data-document-condition-mode][value="conditional"]')?.checked;
+  conditionalSection.classList.toggle("is-open", Boolean(conditional));
 }
 
 function supportingDocumentRequirementHtml(id, mandatory = false) {
@@ -943,7 +943,8 @@ function supportingDocumentRequirementHtml(id, mandatory = false) {
 function createSupportingDocument(config = {}) {
   const id = supportingDocumentId++;
   const conditions = config.requiredWhen || [];
-  const mandatory = Boolean(config.mandatory || config.is_mandatory || config.requirement === "mandatory" || conditions.length);
+  const mandatory = Boolean(config.mandatory || config.is_mandatory);
+  const conditional = config.requirement === "conditional" || conditions.length > 0;
   const block = document.createElement("article");
   block.className = "document-block";
   block.dataset.supportingDocument = "";
@@ -965,7 +966,17 @@ function createSupportingDocument(config = {}) {
         <input data-document-description value="${escapeHtml(config.description || "")}" placeholder="Brief description" aria-label="Supporting document description" />
       </label>
     </div>
-    <div class="conditional-section${mandatory && conditions.length ? " is-open" : ""}">
+    <div class="requirement-toggle" role="radiogroup" aria-label="Supporting document required condition">
+      <label class="radio-row">
+        <input data-document-condition-mode name="supportingDocCondition${id}" type="radio" value="always"${conditional ? "" : " checked"} />
+        <span>Always required</span>
+      </label>
+      <label class="radio-row">
+        <input data-document-condition-mode name="supportingDocCondition${id}" type="radio" value="conditional"${conditional ? " checked" : ""} />
+        <span>Conditional</span>
+      </label>
+    </div>
+    <div class="conditional-section${conditional ? " is-open" : ""}">
       <div class="builder-subhead compact-subhead">
         <span>Required if any condition matches</span>
       </div>
@@ -1220,12 +1231,13 @@ function collectDocumentation() {
 
       const description = block.querySelector("[data-document-description]")?.value.trim();
       const isMandatory = block.querySelector('[data-document-requirement][value="mandatory"]')?.checked;
+      const isConditional = block.querySelector('[data-document-condition-mode][value="conditional"]')?.checked;
       const conditionRows = Array.from(block.querySelectorAll("[data-document-condition]"));
       const extractions = collectExtractionRows(block.querySelector("[data-document-extraction-list]"));
       const documentConfig = {
         document_type: documentType,
         is_mandatory: Boolean(isMandatory),
-        required_when: isMandatory ? conditionRows.map(collectCondition).filter(Boolean) : [],
+        required_when: isConditional ? conditionRows.map(collectCondition).filter(Boolean) : [],
         required_extractions: extractions,
       };
 
@@ -1577,7 +1589,7 @@ policyBuilderConfig.addEventListener("change", (event) => {
 
   if (
     event.target.closest("[data-supporting-document]") &&
-    event.target.matches('[data-document-requirement]')
+    event.target.matches("[data-document-condition-mode]")
   ) {
     syncSupportingDocumentRequirement(event.target.closest("[data-supporting-document]"));
   }

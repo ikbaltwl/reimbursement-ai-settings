@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Policy Verification Settings</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar" aria-label="Primary navigation">
+      <a class="brand" href="#" aria-label="Mekari Talenta home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-copy">
+          <span>mekari</span>
+          <strong>talenta</strong>
+        </span>
+      </a>
+
+      <nav class="main-nav" aria-label="Main menu">
+        <a href="#">Dashboard</a>
+        <a href="#">Employees</a>
+        <a href="#">Time Management <span class="caret" aria-hidden="true"></span></a>
+        <a class="is-active" href="#">Finance <span class="caret" aria-hidden="true"></span></a>
+        <a href="#">Payroll</a>
+        <a href="#">Company <span class="caret" aria-hidden="true"></span></a>
+      </nav>
+
+      <div class="topbar-actions" aria-label="Account shortcuts">
+        <button class="icon-button search-icon" type="button" aria-label="Search"></button>
+        <button class="icon-button inbox-icon" type="button" aria-label="Inbox"></button>
+        <button class="icon-button apps-icon" type="button" aria-label="Apps"></button>
+        <button class="avatar-button" type="button" aria-label="Open profile menu">
+          <span class="avatar">PB</span>
+          <span class="caret" aria-hidden="true"></span>
+        </button>
+      </div>
+    </header>
+
+    <main class="settings-page">
+      <section class="settings-wrap" aria-labelledby="settings-title">
+        <h1 id="settings-title">Settings</h1>
+
+        <nav class="settings-tabs" aria-label="Settings sections">
+          <a href="#">Account<br />Preferences</a>
+          <a href="#">Company</a>
+          <a href="#">Time<br />Management</a>
+          <a href="#">Payroll</a>
+          <a class="is-active" href="#">Finance</a>
+          <a href="#">ESS</a>
+          <a href="#">Users <span class="caret" aria-hidden="true"></span></a>
+          <a href="#">Integrations</a>
+          <a href="#">Workflows <span class="caret" aria-hidden="true"></span></a>
+        </nav>
+
+        <div class="policy-shell">
+          <aside class="policy-rail" aria-label="Finance settings menu">
+            <div class="rail-item is-active">
+              <span class="rail-icon" aria-hidden="true"></span>
+              <span>Reimbursement</span>
+            </div>
+          </aside>
+
+          <form class="policy-form" id="policyForm">
+            <div class="form-header">
+              <h2>Reimbursement Policy</h2>
+              <button type="button" class="ghost-export" id="exportButton">Export</button>
+            </div>
+
+            <section class="basic-info" aria-label="Reimbursement policy details">
+              <label>
+                <span>Reimbursement name</span>
+                <input name="reimbursementName" value="Medical reimbursement" />
+              </label>
+              <label>
+                <span>Effective date</span>
+                <input name="effectiveDate" value="4 November, 2025" />
+              </label>
+              <label class="span-2">
+                <span>Description</span>
+                <input
+                  name="description"
+                  value="This reimbursement covers outpatient and medicine"
+                />
+              </label>
+            </section>
+
+            <section class="ai-layout" aria-label="AI policy verification settings">
+              <div class="ai-main" id="aiMain">
+                <label class="legacy-check ai-toggle">
+                  <input id="aiEnabled" name="aiEnabled" type="checkbox" checked />
+                  <span class="checkmark" aria-hidden="true"></span>
+                  <strong>This policy using AI Policy Verification</strong>
+                </label>
+
+                <div class="ai-config" id="aiConfig">
+                  <div class="info-banner" id="infoBanner">
+                    <span class="info-icon" aria-hidden="true">i</span>
+                    <div>
+                      <strong>AI policy verification enabled</strong>
+                      <p>
+                        AI may automatically approve or reject requests, bypassing approval rule
+                        settings based on your policy criteria. AI results may not always be
+                        accurate. Please monitor AI decisions and review requests when necessary.
+                      </p>
+                      <small id="aiReviewedAt">Reviewed by AI at 16 Mar 2026, 17:00</small>
+                    </div>
+                    <button
+                      type="button"
+                      class="banner-close"
+                      id="closeBanner"
+                      aria-label="Dismiss information"
+                    >
+                      &times;
+                    </button>
+                  </div>
+
+                  <div class="section-heading">
+                    <h3>Policy rules</h3>
+                    <p>Define criteria reimbursement rule to make request auto-approve</p>
+                  </div>
+
+                  <label class="line-field compact-field">
+                    <span>Policy category</span>
+                    <select name="policyCategory">
+                      <option>Medical &amp; Health</option>
+                      <option>Travel</option>
+                      <option>Meal</option>
+                      <option>Office Supplies</option>
+                    </select>
+                  </label>
+
+                  <div class="criteria-heading">Criteria</div>
+
+                  <div class="criteria-list" id="criteriaList">
+                    <article class="criteria-row" data-criteria>
+                      <div class="criteria-label">Criteria 1</div>
+                      <div class="criteria-fields">
+                        <select aria-label="Criteria 1 type">
+                          <option>Merchant type</option>
+                          <option>Receipt type</option>
+                          <option>Receipt date</option>
+                          <option>Items</option>
+                          <option>Claim amount</option>
+                        </select>
+                        <select aria-label="Criteria 1 operator">
+                          <option>Includes</option>
+                          <option>Excludes</option>
+                          <option>Is less than</option>
+                          <option>Is greater than</option>
+                        </select>
+                        <button
+                          type="button"
+                          class="value-picker"
+                          data-value-picker
+                          aria-label="Open criteria 1 value picker"
+                          aria-haspopup="listbox"
+                        >
+                          Select type
+                        </button>
+                        <div class="chips span-fields" aria-label="Selected values">
+                          <span>Klinik umum <button type="button" aria-label="Remove Klinik umum">&times;</button></span>
+                          <span>Klinik pratama <button type="button" aria-label="Remove Klinik pratama">&times;</button></span>
+                          <span>Rumah Sakit <button type="button" aria-label="Remove Rumah Sakit">&times;</button></span>
+                        </div>
+                      </div>
+                    </article>
+
+                    <div class="connector"><span>And</span></div>
+
+                    <article class="criteria-row" data-criteria>
+                      <div class="criteria-label">Criteria 2</div>
+                      <div class="criteria-fields">
+                        <select aria-label="Criteria 2 type">
+                          <option>Merchant type</option>
+                          <option>Receipt type</option>
+                          <option>Receipt date</option>
+                          <option>Items</option>
+                          <option>Claim amount</option>
+                        </select>
+                        <select aria-label="Criteria 2 operator">
+                          <option>Excludes</option>
+                          <option>Includes</option>
+                          <option>Is less than</option>
+                          <option>Is greater than</option>
+                        </select>
+                        <button
+                          type="button"
+                          class="value-picker"
+                          data-value-picker
+                          aria-label="Open criteria 2 value picker"
+                          aria-haspopup="listbox"
+                        >
+                          Select type
+                        </button>
+                        <div class="chips span-fields" aria-label="Selected values">
+                          <span>Klinik BPJS <button type="button" aria-label="Remove Klinik BPJS">&times;</button></span>
+                        </div>
+                      </div>
+                    </article>
+
+                    <div class="connector"><span>And</span></div>
+
+                    <article class="criteria-row" data-criteria>
+                      <div class="criteria-label">Criteria 3</div>
+                      <div class="criteria-fields">
+                        <select aria-label="Criteria 3 type">
+                          <option>Receipt type</option>
+                          <option>Merchant type</option>
+                          <option>Receipt date</option>
+                          <option>Items</option>
+                          <option>Claim amount</option>
+                        </select>
+                        <select aria-label="Criteria 3 operator">
+                          <option>Includes</option>
+                          <option>Excludes</option>
+                          <option>Is less than</option>
+                          <option>Is greater than</option>
+                        </select>
+                        <button
+                          type="button"
+                          class="value-picker"
+                          data-value-picker
+                          aria-label="Open criteria 3 value picker"
+                          aria-haspopup="listbox"
+                        >
+                          Select type
+                        </button>
+                        <div class="chips span-fields" aria-label="Selected values">
+                          <span>Printed invoice Klinik/RS <button type="button" aria-label="Remove Printed invoice Klinik/RS">&times;</button></span>
+                          <span>Pharmacy Receipt <button type="button" aria-label="Remove Pharmacy Receipt">&times;</button></span>
+                          <span>Lab Result Invoice <button type="button" aria-label="Remove Lab Result Invoice">&times;</button></span>
+                        </div>
+                      </div>
+                    </article>
+
+                    <div class="connector"><span>And</span></div>
+
+                    <article class="criteria-row is-short" data-criteria>
+                      <div class="criteria-label">Criteria 4</div>
+                      <div class="criteria-fields criteria-fields-four">
+                        <select aria-label="Criteria 4 type">
+                          <option>Receipt date</option>
+                          <option>Claim amount</option>
+                        </select>
+                        <select aria-label="Criteria 4 operator">
+                          <option>Is less than</option>
+                          <option>Is greater than</option>
+                        </select>
+                        <input aria-label="Criteria 4 value" value="30" />
+                        <select aria-label="Criteria 4 unit">
+                          <option>days</option>
+                          <option>months</option>
+                        </select>
+                      </div>
+                    </article>
+
+                    <div class="connector"><span>And</span></div>
+
+                    <article class="criteria-row" data-criteria>
+                      <div class="criteria-label">Criteria 5</div>
+                      <div class="criteria-fields">
+                        <select aria-label="Criteria 5 type">
+                          <option>Items</option>
+                          <option>Merchant type</option>
+                          <option>Receipt type</option>
+                          <option>Claim amount</option>
+                        </select>
+                        <select aria-label="Criteria 5 operator">
+                          <option>Excludes</option>
+                          <option>Includes</option>
+                          <option>Is less than</option>
+                          <option>Is greater than</option>
+                        </select>
+                        <button
+                          type="button"
+                          class="value-picker"
+                          data-value-picker
+                          aria-label="Open criteria 5 value picker"
+                          aria-haspopup="listbox"
+                        >
+                          Select type
+                        </button>
+                        <div class="chips span-fields" aria-label="Selected values">
+                          <span>Cosmetics <button type="button" aria-label="Remove Cosmetics">&times;</button></span>
+                          <span>Skincare <button type="button" aria-label="Remove Skincare">&times;</button></span>
+                          <span>Hair Loss Treatment <button type="button" aria-label="Remove Hair Loss Treatment">&times;</button></span>
+                          <span>Botox <button type="button" aria-label="Remove Botox">&times;</button></span>
+                          <span>Filler <button type="button" aria-label="Remove Filler">&times;</button></span>
+                        </div>
+                      </div>
+                    </article>
+
+                    <div class="connector decision-connector"><span>Else</span></div>
+
+                    <article class="criteria-row decision-row">
+                      <div class="criteria-label">AI decision</div>
+                      <div class="decision-field">
+                        <select aria-label="AI decision" name="aiDecision">
+                          <option>Need review</option>
+                          <option>Auto-approve</option>
+                          <option>Auto-reject</option>
+                        </select>
+                        <small>Route requests for manual review based on approval rules</small>
+                      </div>
+                    </article>
+                  </div>
+
+                  <button type="button" class="outline-button small" id="addCriteria">Add criteria</button>
+
+                  <div class="section-heading roomy">
+                    <h3>Additional AI rules</h3>
+                  </div>
+
+                  <label class="rules-field">
+                    <span>Rules</span>
+                    <textarea name="aiRules" rows="6">Treat clinics, hospitals, medical laboratories, and pharmacies as medical providers.
+Allow reimbursement for prescribed medication shown on pharmacy receipts. If a receipt contains both medical and non-medical items, only reimburse the medical items. Flag the request for manual review if the receipt is unclear, appears altered, or the merchant cannot be identified.</textarea>
+                  </label>
+
+                  <aside class="tips-box">
+                    <strong>Tips for writing AI rules</strong>
+                    <p id="tipsText">
+                      Describe the reimbursement policy in simple and specific sentences so the AI
+                      can evaluate claims correctly.
+                    </p>
+                    <button type="button" id="tipsToggle">Show more</button>
+                  </aside>
+
+                  <div class="policy-builder-config" id="policyBuilderConfig">
+                    <section class="config-panel" aria-labelledby="eligibilityConfigTitle">
+                      <button
+                        type="button"
+                        class="config-panel-header"
+                        data-config-toggle="eligibilityBody"
+                        aria-controls="eligibilityBody"
+                        aria-expanded="true"
+                      >
+                        <span>
+                          <strong id="eligibilityConfigTitle">Eligibility</strong>
+                          <small>Optional</small>
+                        </span>
+                        <span class="config-chevron" aria-hidden="true"></span>
+                      </button>
+
+                      <div class="config-panel-body is-open" id="eligibilityBody">
+                        <fieldset class="choice-fieldset">
+                          <legend>Allowed family relationship</legend>
+                          <div
+                            class="relationship-list"
+                            id="allowedRelationshipList"
+                            aria-label="Allowed family relationships"
+                          ></div>
+                        </fieldset>
+
+                        <div class="builder-subhead">
+                          <span>Conditional restrictions</span>
+                        </div>
+                        <div class="builder-list" id="eligibilityRuleList"></div>
+                        <button
+                          type="button"
+                          class="outline-button compact list-add-button"
+                          id="addEligibilityRule"
+                        >
+                          Add rule
+                        </button>
+                      </div>
+                    </section>
+
+                    <section class="config-panel" aria-labelledby="documentsConfigTitle">
+                      <button
+                        type="button"
+                        class="config-panel-header"
+                        data-config-toggle="documentationBody"
+                        aria-controls="documentationBody"
+                        aria-expanded="true"
+                      >
+                        <span>
+                          <strong id="documentsConfigTitle">Required documents</strong>
+                          <small>Optional</small>
+                        </span>
+                        <span class="config-chevron" aria-hidden="true"></span>
+                      </button>
+
+                      <div class="config-panel-body is-open" id="documentationBody">
+                        <article class="document-block receipt-block">
+                          <div class="document-block-header">
+                            <strong>Receipt / invoice</strong>
+                          </div>
+
+                          <div class="builder-subhead compact-subhead">
+                            <span>Additional extractions</span>
+                          </div>
+                          <div class="extraction-list" id="receiptExtractionList"></div>
+                          <button
+                            type="button"
+                            class="outline-button compact list-add-button"
+                            id="addReceiptExtraction"
+                          >
+                            Add field
+                          </button>
+                        </article>
+
+                        <div class="builder-list document-list" id="supportingDocumentList"></div>
+                        <button
+                          type="button"
+                          class="outline-button small"
+                          id="addSupportingDocument"
+                        >
+                          Add supporting document
+                        </button>
+                      </div>
+                    </section>
+                  </div>
+
+                  <div class="section-heading schedule-heading">
+                    <h3>AI processing schedule</h3>
+                    <p>Set how often AI reviews and processes pending claims based on the schedule you define.</p>
+                  </div>
+
+                  <label class="legacy-check">
+                    <input id="runAiAutomatically" name="runAiAutomatically" type="checkbox" checked />
+                    <span class="checkmark" aria-hidden="true"></span>
+                    <strong>Run AI verification automatically</strong>
+                  </label>
+
+                  <div class="inline-fields" id="aiScheduleFields">
+                    <label class="line-field">
+                      <span>Every</span>
+                      <input name="aiScheduleEvery" value="2" inputmode="numeric" />
+                    </label>
+                    <label class="line-field">
+                      <span>Period</span>
+                      <select name="aiSchedulePeriod">
+                        <option>days</option>
+                        <option>weeks</option>
+                      </select>
+                    </label>
+                    <label class="line-field after-field">
+                      <span>Start after</span>
+                      <select name="aiScheduleStart">
+                        <option>Claim submitted</option>
+                        <option>Receipt uploaded</option>
+                        <option>Approval requested</option>
+                      </select>
+                    </label>
+                  </div>
+                </div>
+
+                <section class="legacy-settings" aria-label="Classic reimbursement settings">
+                  <label class="legacy-check">
+                    <input id="unlimitedAmount" name="unlimitedAmount" type="checkbox" />
+                    <span class="checkmark" aria-hidden="true"></span>
+                    <strong>This policy has unlimited amount</strong>
+                  </label>
+
+                  <label class="legacy-check">
+                    <input id="useCurrency" name="useCurrency" type="checkbox" checked />
+                    <span class="checkmark" aria-hidden="true"></span>
+                    <strong>This policy using currency</strong>
+                  </label>
+
+                  <div class="dependent-block currency-block" id="currencyBlock">
+                    <label class="line-field currency-field">
+                      <span>Currency</span>
+                      <select name="currency">
+                        <option>US Dollar</option>
+                        <option>Indonesian Rupiah</option>
+                        <option>Singapore Dollar</option>
+                        <option>Euro</option>
+                      </select>
+                    </label>
+
+                    <fieldset class="method-fieldset">
+                      <legend>Currency method</legend>
+                      <label class="radio-row">
+                        <input name="currencyMethod" type="radio" value="original" />
+                        <span>Keep in original currency</span>
+                        <small>Payroll calculation will remain in the selected foreign currency and be displayed as-is on the payslip.</small>
+                      </label>
+                      <label class="radio-row">
+                        <input name="currencyMethod" type="radio" value="convert" checked />
+                        <span>Convert to Indonesian Rupiah</span>
+                        <small>Payroll calculation will be converted to Rupiah using the defined exchange rate.</small>
+                      </label>
+                    </fieldset>
+
+                    <div class="conversion-grid" id="conversionFields">
+                      <label class="line-field">
+                        <span>Allowance amount</span>
+                        <input id="allowanceAmount" name="allowanceAmount" value="USD | 100.00" />
+                      </label>
+                      <label class="line-field">
+                        <span>Rate</span>
+                        <input id="currencyRate" name="currencyRate" value="Rp | 16.360" />
+                        <small>Currency Indonesian Rupiah based on currency settings. View settings</small>
+                      </label>
+                      <label class="line-field">
+                        <span>Conversion</span>
+                        <input id="conversionAmount" name="conversionAmount" value="Rp | 1.636.000" />
+                        <small>Estimated based on current currency rate. Final rate will apply when payroll is run.</small>
+                      </label>
+                    </div>
+                  </div>
+
+                  <label class="legacy-check">
+                    <input name="defaultNewEmployee" type="checkbox" />
+                    <span class="checkmark" aria-hidden="true"></span>
+                    <strong>Default reimbursement for new employee</strong>
+                  </label>
+
+                  <label class="legacy-check">
+                    <input name="includeTakeHomePay" type="checkbox" />
+                    <span class="checkmark" aria-hidden="true"></span>
+                    <strong>Include in Take Home Pay</strong>
+                  </label>
+
+                  <label class="legacy-check">
+                    <input name="taxable" type="checkbox" />
+                    <span class="checkmark" aria-hidden="true"></span>
+                    <strong>Taxable</strong>
+                  </label>
+
+                  <label class="legacy-check">
+                    <input name="prorateFirstYear" type="checkbox" />
+                    <span class="checkmark" aria-hidden="true"></span>
+                    <strong>Prorate on first year</strong>
+                  </label>
+
+                  <label class="legacy-check">
+                    <input id="noExpiryDate" name="noExpiryDate" type="checkbox" />
+                    <span class="checkmark" aria-hidden="true"></span>
+                    <strong>No expiry date</strong>
+                  </label>
+
+                  <label class="legacy-check">
+                    <input id="maxRequestEnabled" name="maxRequestEnabled" type="checkbox" />
+                    <span class="checkmark" aria-hidden="true"></span>
+                    <strong>Max request per emerge</strong>
+                  </label>
+
+                  <label class="line-field max-request-field" id="maxRequestField">
+                    <span>Max request</span>
+                    <input name="maxRequestPerEmerge" value="1" inputmode="numeric" />
+                  </label>
+
+                  <div class="split-settings">
+                    <fieldset class="emerge-fieldset">
+                      <legend>Emerge</legend>
+                      <div class="emerge-row">
+                        <label class="radio-row">
+                          <input name="emerge" type="radio" value="annually" checked />
+                          <span>Annually</span>
+                        </label>
+                        <label class="line-field mini-field">
+                          <span>Day emerge annually</span>
+                          <select name="emergeDay">
+                            <option>1</option>
+                            <option>15</option>
+                            <option>30</option>
+                          </select>
+                        </label>
+                        <label class="line-field mini-field">
+                          <span>Month emerge annually</span>
+                          <select name="emergeMonth">
+                            <option>1</option>
+                            <option>6</option>
+                            <option>12</option>
+                          </select>
+                        </label>
+                        <label class="line-field mini-field">
+                          <span>Year emerge annually</span>
+                          <select name="emergeYear">
+                            <option>1</option>
+                            <option>2</option>
+                          </select>
+                        </label>
+                      </div>
+                      <label class="radio-row">
+                        <input name="emerge" type="radio" value="anniversary" />
+                        <span>Anniversary</span>
+                      </label>
+                      <label class="radio-row">
+                        <input name="emerge" type="radio" value="monthly" />
+                        <span>Monthly</span>
+                      </label>
+                      <div class="expiry-card" id="expiryCard" aria-label="Policy expiry settings">
+                        <h3>Expired in</h3>
+                        <div class="expiry-options">
+                          <label class="radio-row expiry-monthly">
+                            <input name="expiry" type="radio" value="monthly" checked />
+                            <span>Monthly</span>
+                          </label>
+                          <div class="expiry-custom">
+                            <label class="radio-row expiry-custom-radio" aria-label="Use custom expiry">
+                              <input name="expiry" type="radio" value="custom" />
+                              <span></span>
+                            </label>
+                            <div class="expiry-fields" id="expiryFields">
+                              <label>
+                                <span>Day</span>
+                                <select name="expiryDay">
+                                  <option>1</option>
+                                  <option>15</option>
+                                  <option>30</option>
+                                </select>
+                              </label>
+                              <label>
+                                <span>Month</span>
+                                <select name="expiryMonth">
+                                  <option>January</option>
+                                  <option>June</option>
+                                  <option>December</option>
+                                </select>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </fieldset>
+
+                    <fieldset class="limit-fieldset">
+                      <legend>Reimbursement limit</legend>
+                      <label class="radio-row limit-row">
+                        <input name="limitType" type="radio" value="amount" checked />
+                        <span>Amount</span>
+                        <input id="limitAmount" name="limitAmount" value="USD | 2.000" />
+                      </label>
+                      <label class="radio-row">
+                        <input name="limitType" type="radio" value="formula" />
+                        <span>Formula</span>
+                      </label>
+                    </fieldset>
+                  </div>
+
+                  <label class="legacy-check first-year-flag">
+                    <input name="firstYearFlag" type="checkbox" />
+                    <span class="checkmark" aria-hidden="true"></span>
+                    <strong>First year flag</strong>
+                  </label>
+
+                  <table class="benefit-table" aria-label="Benefits">
+                    <thead>
+                      <tr>
+                        <th>No</th>
+                        <th>Benefit name</th>
+                        <th>Max. request</th>
+                        <th>Min. next claim (months)</th>
+                        <th>Formula</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="benefitBody">
+                      <tr>
+                        <td data-row-number>1</td>
+                        <td><input aria-label="Benefit name 1" value="Outpatient" /></td>
+                        <td><input aria-label="Max request 1" value="USD | 10.000" /></td>
+                        <td><input aria-label="Min next claim 1" value="" /></td>
+                        <td><button type="button" class="outline-button tiny" data-formula>Formula</button></td>
+                        <td><button type="button" class="delete-button" data-delete-benefit aria-label="Delete benefit">&times;</button></td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <button type="button" class="outline-button small" id="addBenefit">Add benefit</button>
+                </section>
+              </div>
+            </section>
+
+            <div class="sticky-actions">
+              <button type="button" class="outline-button" id="simulateButton">Simulate AI verification</button>
+              <span class="action-spacer"></span>
+              <button type="button" class="outline-button" id="resetButton">Close</button>
+              <button type="submit" class="outline-button strong">Save &amp; add policy</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <div class="modal" id="simulationModal" aria-hidden="true" role="dialog" aria-labelledby="simulationTitle">
+      <div class="modal-card">
+        <button type="button" class="modal-close" id="closeModal" aria-label="Close modal">&times;</button>
+        <span class="modal-eyebrow" id="modalEyebrow">AI verification simulation</span>
+        <h2 id="simulationTitle">Manual review recommended</h2>
+        <p id="simulationCopy">
+          The receipt is from a supported medical provider, but it includes mixed medical and
+          non-medical items. The prototype routes this claim for manual review.
+        </p>
+        <dl id="modalDetails">
+          <div>
+            <dt>Matched rules</dt>
+            <dd>Merchant type, receipt type, receipt date</dd>
+          </div>
+          <div>
+            <dt>Potential issue</dt>
+            <dd>Item list contains restricted cosmetic categories</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <div class="criteria-popover" id="criteriaPopover" hidden>
+      <input id="criteriaPopoverSearch" type="text" placeholder="Search..." aria-label="Search criteria value" />
+      <div class="criteria-popover-list" id="criteriaPopoverList" role="listbox"></div>
+    </div>
+
+    <div class="criteria-popover relationship-popover" id="relationshipPopover" hidden>
+      <input
+        id="relationshipPopoverSearch"
+        type="text"
+        placeholder="Search relationship..."
+        aria-label="Search relationship"
+      />
+      <div class="criteria-popover-list" id="relationshipPopoverList" role="listbox"></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

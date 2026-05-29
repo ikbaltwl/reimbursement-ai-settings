@@ -309,7 +309,19 @@ Allow reimbursement for prescribed medication shown on pharmacy receipts. If a r
                       Describe the reimbursement policy in simple and specific sentences so the AI
                       can evaluate claims correctly.
                     </p>
-                    <button type="button" id="tipsToggle">Show more</button>
+                    <div class="tips-details" id="tipsDetails" hidden>
+                      <span>Guidelines</span>
+                      <ul>
+                        <li>Use if-then logic (e.g. If receipt date is older than 30 days, reject)</li>
+                        <li>Describe observable conditions, not assumptions</li>
+                        <li>Set clear limits (amount, date, category, quantity)</li>
+                        <li>Use consistent terms for the same object</li>
+                        <li>Avoid vague words like "usually", "appropriate", or "valid"</li>
+                      </ul>
+                    </div>
+                    <button type="button" id="tipsToggle" aria-expanded="false" aria-controls="tipsDetails">
+                      Show more
+                    </button>
                   </aside>
 
                   <div class="policy-builder-config" id="policyBuilderConfig">

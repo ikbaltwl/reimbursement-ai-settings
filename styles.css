@@ -488,6 +488,10 @@ select:disabled {
   min-width: 0;
 }
 
+.ai-config {
+  padding-left: 24px;
+}
+
 .legacy-check,
 .radio-row {
   display: inline-flex;
@@ -566,7 +570,7 @@ select:disabled {
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr) 24px;
   gap: 12px;
-  margin: 14px 0 22px 24px;
+  margin: 14px 0 22px 0;
   padding: 16px;
   background: var(--info);
   border-radius: 6px;
@@ -924,7 +928,7 @@ textarea:disabled {
 
 .tips-box {
   margin-top: 18px;
-  padding: 16px;
+  padding: 12px 16px;
   background: var(--tip);
   border-radius: 4px;
 }
@@ -937,6 +941,27 @@ textarea:disabled {
 .tips-box p {
   margin: 0 0 8px;
   font-size: 12px;
+  line-height: 16px;
+}
+
+.tips-details {
+  margin-bottom: 8px;
+}
+
+.tips-details span {
+  display: block;
+  margin-bottom: 2px;
+  color: #212121;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.tips-details ul {
+  margin: 0;
+  padding-left: 16px;
+  color: #212121;
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .tips-box button {

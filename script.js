@@ -9,7 +9,7 @@ const aiDecisionCaption = document.querySelector("#aiDecisionCaption");
 const runAiAutomatically = document.querySelector("#runAiAutomatically");
 const aiScheduleFields = document.querySelector("#aiScheduleFields");
 const tipsToggle = document.querySelector("#tipsToggle");
-const tipsText = document.querySelector("#tipsText");
+const tipsDetails = document.querySelector("#tipsDetails");
 const policyBuilderConfig = document.querySelector("#policyBuilderConfig");
 const allowedRelationshipList = document.querySelector("#allowedRelationshipList");
 const addEligibilityRule = document.querySelector("#addEligibilityRule");
@@ -53,9 +53,6 @@ let eligibilityRuleId = 0;
 let supportingDocumentId = 0;
 let extractionRowId = 0;
 let documentConditionId = 0;
-
-const extendedTips =
-  "Use positive and negative examples, include merchant names only when needed, and describe edge cases such as unclear receipts, mixed items, or suspicious edits.";
 
 const criteriaSuggestions = {
   "merchant type": ["Klinik Umum", "Klinik Pratama", "Rumah Sakit", "Apotek", "Laboratorium", "Optik"],
@@ -216,6 +213,13 @@ function syncLimitState() {
 function syncAiDecisionCaption() {
   const decision = policyForm.elements.aiDecision.value;
   aiDecisionCaption.textContent = aiDecisionCaptions[decision] || aiDecisionCaptions["Need review"];
+}
+
+function setTipsExpanded(expanded) {
+  tipsToggle.dataset.expanded = String(expanded);
+  tipsToggle.setAttribute("aria-expanded", String(expanded));
+  tipsDetails.hidden = !expanded;
+  tipsToggle.textContent = expanded ? "Show less" : "Show more";
 }
 
 function getActiveAmountPrefix() {
@@ -1477,11 +1481,7 @@ window.addEventListener("scroll", () => {
 
 tipsToggle.addEventListener("click", () => {
   const expanded = tipsToggle.dataset.expanded === "true";
-  tipsToggle.dataset.expanded = String(!expanded);
-  tipsText.textContent = expanded
-    ? "Describe the reimbursement policy in simple and specific sentences so the AI can evaluate claims correctly."
-    : extendedTips;
-  tipsToggle.textContent = expanded ? "Show more" : "Show less";
+  setTipsExpanded(!expanded);
 });
 
 policyBuilderConfig.querySelectorAll("[data-config-toggle]").forEach((button) => {
@@ -1708,6 +1708,7 @@ resetButton.addEventListener("click", () => {
   syncMaxRequestState();
   syncLimitState();
   syncAiDecisionCaption();
+  setTipsExpanded(false);
   showToast("Form restored to its initial prototype values");
 });
 
@@ -1770,3 +1771,4 @@ syncAmountPrefixes();
 syncExpiryState();
 syncMaxRequestState();
 syncLimitState();
+setTipsExpanded(false);
